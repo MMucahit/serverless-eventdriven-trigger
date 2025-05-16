@@ -1,0 +1,14 @@
+# redis-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: argo-events
+spec:
+  selector:
+    app: redis
+  type: NodePort
+  ports:
+    - port: 6379
+      targetPort: 6379
+      nodePort: 30080 # manuel port ataması (30000-32767 arasında)

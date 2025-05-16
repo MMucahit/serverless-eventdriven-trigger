@@ -1,0 +1,42 @@
+Minikube Commands: minikube status
+  minikube ssh
+  minikube ip
+  minikube image load {image_name:version}
+
+Kubectl Commands: kubectl get deploy -n {namespace_name}
+  kubectl get pods -n {namespace_name}
+  kubectl get services -n {namespace_name}
+
+  kubectl get sensor -n {namespace_name}
+  kubectl get eventsource -n {namespace_name}
+
+  kubectl get sensor -n {namespace} {sensor_name} -o yaml
+  kubectl get eventsource -n {namespace} {eventsource_name} -o yaml
+
+  kubectl get clusterroles
+  kubectl get clusterrolebindings
+
+  kubectl get roles -n {namespace_name}
+  kubectl get rolebindings -n {namespace_name}
+
+  kubectl get role {role_name} -n {namespace_name} -o yaml
+
+  kubectl logs -f {pod_name} -n {namespace_name}
+
+Create Namespace: kubectl create namespace argo-events
+
+Install argo-events and eventbus: kubectl apply \
+  --filename https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
+
+  kubectl --namespace argo-events apply \
+  --filename https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
+
+Apply Redis: kubectl apply -f redis-deployment.yaml -n argo-events
+  kubectl apply -f redis-service.yaml -n argo-events
+
+Connect Redis: kubectl exec -it {pod_name} -n {namespace_name} -- sh
+
+Read Redis log: redis-cli --csv psubscribe '__keyevent@0__:expired'
+
+Apply Eventsource: cd k8s, kubectl apply -f eventsource/redis-eventsource.yaml -n argo-events
+Apply Sensor: cd k8s, kubectl apply -f sensor/redis-sensor.yaml -n argo-events

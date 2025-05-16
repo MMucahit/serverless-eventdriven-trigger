@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: redis-expire-sensor
+  namespace: argo-events
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: redis-event
+      eventSourceName: redis
+      eventName: example
+  triggers:
+    - template:
+        name: python-script-pod
+        k8s:
+          group: ""
+          version: v1
+          resource: pods
+          operation: create
+          source:
+            resource:
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                generateName: redis-python-script-
+                namespace: argo-events
+              spec:
+                containers:
+                  - name: python-script
+                    image: mmucahitnas/redis_handler:latest
+                    imagePullPolicy: Never
+                    env:
+                      - name: JOB_ID
+                        value: "{{`{{.Input.body}}`}}"
+                restartPolicy: Never
+          parameters:
+            - src:
+                dependencyName: redis-event
+                dataKey: body
+              dest: spec.containers.0.env.0.value

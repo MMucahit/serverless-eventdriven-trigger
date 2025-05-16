@@ -1,0 +1,10 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: redis
+spec:
+  redis:
+    example:
+      hostAddress: 192.168.49.2:30080
+      channels:
+        - "__keyevent@0__:expired"
